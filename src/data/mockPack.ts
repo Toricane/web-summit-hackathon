@@ -83,34 +83,18 @@ export const OTHER_MEMBER_IDS: MemberId[] = MEMBERS.filter(
 ).map((m) => m.id);
 
 /**
- * Pre-curated wishlist with deliberate overlap shapes:
- *   4/4 unanimous: hardware founders meetup
- *   3/4: government summit + a couple of AI talks
- *   2/4: New Media Gen-Z talk + Centre Stage Sigrid Jin opener
- *   1/4: niche solo picks
+ * Pre-curated wishlist tuned so every conference day has at least two
+ * majority-pack picks (≥ 3 other members going) — those slot onto the
+ * Day Timeline. Lower-attendance picks still surface in the Event Overlap
+ * list and as candidates inside the Slot Picker. Going-count notation
+ * follows the rest of the app: N/4 = # of *other* members going (you excluded).
  *
  * Event IDs are real entries pulled from events.json.
  */
 type WishlistRow = { eventId: string; goers: MemberId[] };
 
 export const WISHLIST: WishlistRow[] = [
-  // THU May 14 — 4/4 unanimous (everyone wants the hardware founders meetup)
-  // (Real event 9445ed44... is on May 12 in the dataset. Using the May-13 founders meetup instead to match the "THU" mockup feel.)
-  {
-    eventId: "2784c1e1-51e8-4e50-a518-28961ed5239b",
-    goers: ["you", "daniel", "jessica", "ramesh"],
-  },
-  // THU May 14 10:45 — 3/4: Government Summit "Shifting gears or staying in neutral?"
-  {
-    eventId: "78a25e47-acaa-4e90-892c-5b681d02d3e5",
-    goers: ["you", "daniel", "ramesh"],
-  },
-  // THU May 14 10:30 — 2/4: New Media "What shapes Gen Z's worldview?"
-  {
-    eventId: "97881af7-087c-4d7e-ac50-64241a9250f3",
-    goers: ["you", "jessica"],
-  },
-  // MON May 11 18:20 — 4/4: Centre Stage Sigrid Jin
+  // MON May 11 18:20 — 3/4: Centre Stage "Can copyright survive tokenmaxxing?" (Sigrid Jin)
   {
     eventId: "fc113bff-81e4-4b66-9e1a-96d4e8d74223",
     goers: ["you", "daniel", "jessica", "ramesh"],
@@ -120,40 +104,59 @@ export const WISHLIST: WishlistRow[] = [
     eventId: "4523eed7-1d00-4115-bfbb-c599a40eaa09",
     goers: ["daniel", "jessica", "ramesh"],
   },
-  // WED May 13 — AI Summit opener (3/4)
-  {
-    eventId: "45e55370-6218-4b4d-9d62-a5d84a4ae8d6",
-    goers: ["you", "ramesh", "daniel"],
-  },
-  // WED May 13 — Creator era platforms (2/4)
-  {
-    eventId: "1b0459b1-c02e-4b38-83a0-3e21d11d4e83",
-    goers: ["jessica", "you"],
-  },
-  // TUE May 12 — Centre Stage Open source in the agentic era (4/4)
+  // TUE May 12 14:15 — 3/4: Centre Stage "Open source in the agentic era"
   {
     eventId: "1d7ff5db-cbb4-48bf-9352-23c2c010b3f2",
     goers: ["you", "daniel", "jessica", "ramesh"],
   },
-  // TUE May 12 — Seed stage VC (1/4: only Daniel)
+  // TUE May 12 12:00 — 3/4: "Brand building in the age of AI"
+  // (bumped from 2/4 to 3/4 so TUE has two timeline picks)
+  {
+    eventId: "65c84aef-01f7-4a46-8d1e-36ee40a096f3",
+    goers: ["you", "jessica", "ramesh", "daniel"],
+  },
+  // TUE May 12 14:00 — 1/4: Seed-stage funding (Daniel's solo pick; stays off the timeline)
   {
     eventId: "9afdae16-ee1a-4c02-b1e9-f0480d6144f7",
     goers: ["daniel"],
   },
-  // TUE May 12 — Brand building age of AI (2/4)
+  // WED May 13 10:15 — 3/4: "Why open source will win the agent era"
+  // (bumped from 2/4 to 3/4 so WED opens with a majority pick)
   {
-    eventId: "65c84aef-01f7-4a46-8d1e-36ee40a096f3",
+    eventId: "45e55370-6218-4b4d-9d62-a5d84a4ae8d6",
+    goers: ["you", "ramesh", "daniel", "jessica"],
+  },
+  // WED May 13 11:30 — 1/4: Creator-era platforms (Jessica + you, low-attendance pick)
+  {
+    eventId: "1b0459b1-c02e-4b38-83a0-3e21d11d4e83",
     goers: ["jessica", "you"],
   },
-  // THU May 14 14:55 — Planet Summit pitch deck (1/4)
+  // WED May 13 13:00 — 3/4: Seed & series A founders meetup
+  {
+    eventId: "2784c1e1-51e8-4e50-a518-28961ed5239b",
+    goers: ["you", "daniel", "jessica", "ramesh"],
+  },
+  // THU May 14 10:30 — 1/4: "What shapes Gen Z's worldview?" (low-attendance)
+  {
+    eventId: "97881af7-087c-4d7e-ac50-64241a9250f3",
+    goers: ["you", "jessica"],
+  },
+  // THU May 14 10:45 — 3/4: Government Summit "Shifting gears or staying in neutral?"
+  // (bumped from 2/4 to 3/4 so today has multiple timeline picks)
+  {
+    eventId: "78a25e47-acaa-4e90-892c-5b681d02d3e5",
+    goers: ["you", "daniel", "ramesh", "jessica"],
+  },
+  // THU May 14 14:55 — 0/4: Planet Summit pitch deck (your solo pick)
   {
     eventId: "e3a9bb78-8334-4846-988f-14398033d920",
     goers: ["you"],
   },
-  // THU May 14 — Centre Stage AI reads the fine print (3/4)
+  // THU May 14 15:00 — 3/4: Centre Stage "AI reads the fine print"
+  // (bumped from 2/4 to 3/4 — daniel added)
   {
     eventId: "2a1f778f-c51a-4235-8a43-16368fff456c",
-    goers: ["you", "ramesh", "jessica"],
+    goers: ["you", "ramesh", "jessica", "daniel"],
   },
 ];
 

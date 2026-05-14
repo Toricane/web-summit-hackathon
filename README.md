@@ -23,10 +23,19 @@ Inside the Pack tab there are four sub-tabs:
 
 | Tab        | What it shows                                                                                                                                     |
 | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Events     | "Event Overlap" — events the pack wants to attend, sorted by going-count. Filter by day & format. Browse-all mode searches across 515 events.    |
+| Events     | "Event Overlap" — events the pack wants to attend, sorted by going-count. Filter by day & format. Tap **Open day timeline** for the calendar view, or **Browse all events** to search across 515 sessions. |
 | Status     | Live pack activity feed with relative timestamps and online dots, plus a 5-preset Quick Status grid for one-tap broadcasts.                      |
 | Map        | Stylised top-down floor plan of the venue with member pins, status captions, a tap-to-pin mode, and a "Pick zone" sheet for named-zone shortcuts. |
 | AI Match   | Pre-computed top-3 recommendations with "Why this match?" reasoning. "Refresh Matches" rotates between two pre-baked candidate sets.              |
+
+### Day Timeline (inside the Events tab)
+
+The "Open day timeline" tile at the top of the Events tab opens a vertical 8 AM → 10 PM calendar for the selected day.
+
+- Wishlist events with **≥ 3/4 pack overlap** are pre-slotted as filled purple blocks (solid for unanimous, lighter for majority). Lower-attendance picks stay in the Event Overlap list to keep the timeline readable as "the shared day plan".
+- **Tap any empty slot** to drop a 30-minute purple selection snapped to 10-minute increments. **Drag the grip handle** at the bottom of the selection to extend it.
+- The purple **arrow button** on the right of the selection scrolls down to a Slot Picker that ranks candidate events by time fit and lightweight keyword similarity to the pack's existing picks — so the events it suggests feel related to what the pack has already chosen.
+- Bookmarking a candidate from the Slot Picker uses the same wishlist toggle as the rest of the app.
 
 A demo join code (`WSV7XK`) is pre-filled on the landing screen — tap **Join Pack** to enter. **Leave Pack** resets state.
 
@@ -78,6 +87,7 @@ src/
   utils/
     events.ts           typed event helpers, format/colour lookups
     time.ts             clock formatting, day labels, relative times
+    calendar.ts         minute math, 10-min snap, keyword similarity for the Day Timeline
   layout/
     MobileFrame.tsx     mobile-aspect frame for desktop
     BottomNav.tsx       5-tab nav, only "Pack" enabled
@@ -87,7 +97,10 @@ src/
   features/pack/
     PackHeader.tsx      join code card, packmates row
     TabBar.tsx          Events | Status | Map | AI Match
-    EventsTab.tsx       overlap list + browse-all-events mode
+    EventsTab.tsx       overlap list + Day Timeline + browse-all-events modes
+    CalendarView.tsx    Day Timeline screen (day chips + timeline + slot picker)
+    TimelineCanvas.tsx  scrollable 8AM–10PM grid, wishlist blocks, selection handle
+    CandidateSheet.tsx  ranked slot-picker list (overlap fit + keyword similarity)
     StatusTab.tsx       live status panel + activity feed
     MapTab.tsx          floor plan + pins + zone picker
     AIMatchTab.tsx      ranked picks with "Why this match?"

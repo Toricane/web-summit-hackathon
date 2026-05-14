@@ -95,6 +95,25 @@ export function EventsTab({ onSwitchTab: _onSwitchTab }: EventsTabProps) {
       <div className="px-4 pt-3 pb-2">
         {view === "overlap" ? (
           <>
+            <button
+              type="button"
+              onClick={() => setView("calendar")}
+              className="mb-3 w-full card p-3 flex items-center justify-between text-sm font-medium tap"
+            >
+              <span className="flex items-center gap-2">
+                <span className="w-8 h-8 rounded-lg bg-brand/20 grid place-items-center">
+                  <CalendarRange className="w-4 h-4 text-brand-light" />
+                </span>
+                <span className="flex flex-col items-start leading-tight">
+                  <span>Open day timeline</span>
+                  <span className="text-[11px] text-ink-muted font-normal">
+                    Slot new events into your day
+                  </span>
+                </span>
+              </span>
+              <span className="text-ink-muted">→</span>
+            </button>
+
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h2 className="text-lg font-semibold">Event Overlap</h2>
@@ -166,22 +185,8 @@ export function EventsTab({ onSwitchTab: _onSwitchTab }: EventsTabProps) {
 
             <button
               type="button"
-              onClick={() => setView("calendar")}
-              className="mt-4 w-full card p-4 flex items-center justify-between text-sm font-medium tap"
-            >
-              <span className="flex items-center gap-2">
-                <span className="w-7 h-7 rounded-lg bg-brand/20 grid place-items-center">
-                  <CalendarRange className="w-4 h-4 text-brand-light" />
-                </span>
-                Open day timeline
-              </span>
-              <span className="text-ink-muted">→</span>
-            </button>
-
-            <button
-              type="button"
               onClick={() => setView("all")}
-              className="mt-3 w-full card p-4 flex items-center justify-between text-sm font-medium tap"
+              className="mt-4 w-full card p-4 flex items-center justify-between text-sm font-medium tap"
             >
               <span className="flex items-center gap-2">
                 <span className="w-7 h-7 rounded-lg bg-card-elevated grid place-items-center">

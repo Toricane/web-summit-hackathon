@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useRef } from "react";
-import { GripHorizontal } from "lucide-react";
+import { GripHorizontal, ArrowDown } from "lucide-react";
 import {
   formatPillClasses,
   getEvent,
@@ -19,6 +19,14 @@ const TOTAL_HEIGHT = (DAY_END_MIN - DAY_START_MIN) * PX_PER_MIN;
 const MIN_SELECTION_MIN = 10;
 const DEFAULT_SELECTION_MIN = 30;
 
+/**
+ * Only events with at least this many *other* members going (out of 4)
+ * are pre-slotted onto the timeline. Lower-attendance wishlist entries
+ * still appear in the Event Overlap list — the timeline is reserved for
+ * the pack's majority picks so it reads as the shared day plan.
+ */
+export const TIMELINE_MIN_ATTENDANCE = 3;
+
 export type Selection = { startMin: number; endMin: number };
 
 export type TimelineBlock = {
@@ -33,6 +41,7 @@ type TimelineCanvasProps = {
   selectedDate: string;
   selection: Selection | null;
   onSelectionChange: (sel: Selection | null) => void;
+  onJumpToResults?: () => void;
   lateNightCount: number;
 };
 
@@ -40,6 +49,7 @@ export function TimelineCanvas({
   selectedDate,
   selection,
   onSelectionChange,
+  onJumpToResults,
   lateNightCount,
 }: TimelineCanvasProps) {
   const { state, otherMemberIds } = usePackState();
@@ -54,6 +64,7 @@ export function TimelineCanvas({
       const endMin = isoToMinutes(event.end);
       if (endMin <= DAY_START_MIN || startMin >= DAY_END_MIN) continue;
       const goingCount = goers.filter((id) => id !== "you").length;
+      if (goingCount < TIMELINE_MIN_ATTENDANCE) continue;
       rows.push({
         event,
         startMin,
@@ -108,6 +119,7 @@ export function TimelineCanvas({
         <SelectionOverlay
           selection={selection}
           onChange={onSelectionChange}
+          onJumpToResults={onJumpToResults}
           yToMinutes={yToMinutes}
           canvasRef={canvasRef}
         />
@@ -223,11 +235,13 @@ function Block({ block }: { block: TimelineBlock }) {
 function SelectionOverlay({
   selection,
   onChange,
+  onJumpToResults,
   yToMinutes,
   canvasRef,
 }: {
   selection: Selection;
   onChange: (sel: Selection) => void;
+  onJumpToResults?: () => void;
   yToMinutes: (y: number) => number;
   canvasRef: React.RefObject<HTMLDivElement | null>;
 }) {
@@ -270,6 +284,22 @@ function SelectionOverlay({
         {minutesToShortClock(selection.startMin)} –{" "}
         {minutesToShortClock(selection.endMin)}
       </div>
+
+      {onJumpToResults && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onJumpToResults();
+          }}
+          onPointerDown={(e) => e.stopPropagation()}
+          aria-label="See matching events"
+          className="pointer-events-auto absolute right-1 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-brand text-white grid place-items-center shadow-lg tap hover:bg-brand-light focus:outline-none focus:ring-2 focus:ring-brand-light"
+        >
+          <ArrowDown className="w-4 h-4" />
+        </button>
+      )}
+
       <div
         data-handle="1"
         role="slider"

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   ALL_EVENTS,
   CONFERENCE_DATES,
@@ -9,6 +9,7 @@ import { isoToMinutes } from "../../utils/calendar";
 import { usePackState } from "../../hooks/usePackState";
 import {
   DAY_END_MIN,
+  TIMELINE_MIN_ATTENDANCE,
   TimelineCanvas,
   type Selection,
 } from "./TimelineCanvas";
@@ -24,16 +25,30 @@ export function CalendarView() {
   const { state } = usePackState();
   const [selectedDate, setSelectedDate] = useState<string>(pickDefaultDate);
   const [selection, setSelection] = useState<Selection | null>(null);
+  const candidateSheetRef = useRef<HTMLDivElement | null>(null);
 
-  const lateNightCount = useMemo(() => {
-    let count = 0;
-    for (const eventId of Object.keys(state.wishlist)) {
+  const jumpToResults = () => {
+    candidateSheetRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
+
+  const { lateNightCount, lowAttendanceCount } = useMemo(() => {
+    let late = 0;
+    let low = 0;
+    for (const [eventId, goers] of Object.entries(state.wishlist)) {
       const event = getEvent(eventId);
       if (!event || event.date !== selectedDate) continue;
       const startMin = isoToMinutes(event.start);
-      if (startMin >= DAY_END_MIN) count++;
+      if (startMin >= DAY_END_MIN) {
+        late++;
+        continue;
+      }
+      const goingCount = goers.filter((id) => id !== "you").length;
+      if (goingCount < TIMELINE_MIN_ATTENDANCE) low++;
     }
-    return count;
+    return { lateNightCount: late, lowAttendanceCount: low };
   }, [state.wishlist, selectedDate]);
 
   const eventsTodayCount = useMemo(
@@ -88,26 +103,41 @@ export function CalendarView() {
           selectedDate={selectedDate}
           selection={selection}
           onSelectionChange={setSelection}
+          onJumpToResults={jumpToResults}
           lateNightCount={lateNightCount}
         />
       </div>
 
       {selection && (
-        <CandidateSheet
-          selectedDate={selectedDate}
-          selection={selection}
-          onClear={() => setSelection(null)}
-        />
+        <div ref={candidateSheetRef} className="scroll-mt-3">
+          <CandidateSheet
+            selectedDate={selectedDate}
+            selection={selection}
+            onClear={() => setSelection(null)}
+          />
+        </div>
       )}
 
       {!selection && (
         <div className="mt-3 card p-3 text-[11px] text-ink-muted flex items-start gap-2">
           <span className="mt-0.5 w-2 h-2 rounded-full bg-brand shrink-0" />
           <span>
-            Pack picks for{" "}
-            <span className="text-ink font-medium">{dayLabel(selectedDate)}</span>{" "}
-            are filled in purple — solid for unanimous, lighter for partial
-            overlap. Tap an empty slot to slot in something new.
+            Only events with{" "}
+            <span className="text-ink font-medium">
+              {TIMELINE_MIN_ATTENDANCE}/4
+            </span>{" "}
+            or more pack overlap are pre-slotted (solid = unanimous, lighter =
+            majority). Tap an empty slot to fit something new in.
+            {lowAttendanceCount > 0 && (
+              <>
+                {" "}
+                <span className="text-ink-subtle">
+                  {lowAttendanceCount} lower-attendance{" "}
+                  {lowAttendanceCount === 1 ? "pick is" : "picks are"} hidden —
+                  see them under Event Overlap.
+                </span>
+              </>
+            )}
           </span>
         </div>
       )}

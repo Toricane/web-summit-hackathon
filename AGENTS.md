@@ -18,9 +18,10 @@ The project brief lives at [websummit_hackathon.md](websummit_hackathon.md) — 
 2. **Mobile aspect ratio on desktop.** [src/layout/MobileFrame.tsx](src/layout/MobileFrame.tsx) wraps the app in a 420 × 880 phone-shaped viewport with black gutters when the viewport is `≥ sm` (640px). On real mobile the app fills the screen. **Never** make the layout responsive in the "fill the desktop" sense — this is a phone-feature demo. The faux notch is intentional.
 3. **No router.** The app uses state-based view switching (`state.joined` in `App.tsx`, `useState<TabId>` in `PackScreen.tsx`). This keeps deploys trivial on both Vercel and GitHub Pages. Don't add `react-router-dom` unless the user asks for deep links.
 4. **Bottom nav: only "Pack" is enabled.** [src/layout/BottomNav.tsx](src/layout/BottomNav.tsx) deliberately disables Home / Schedule / Scan / Profile. The user picked this in planning to keep demo focus crystal clear. Don't "helpfully" make them clickable.
-5. **The 4 sub-tabs match the user's mockup screenshots.** Events → Status → Map → AI Match. Their visual language (dark theme, brand purple `#7C5CFF`, format-coloured pills, rounded cards with a 1-pixel `border-line` border) is the demo's pixel-level reference. Use the existing palette tokens before adding new ones.
+5. **The 4 sub-tabs match the user's mockup screenshots.** Events → Status → Map → AI Match. Their visual language (dark theme, brand purple `#7C5CFF`, format-coloured pills, rounded cards with a 1-pixel `border-line` border) is the demo's pixel-level reference. Use the existing palette tokens before adding new ones. The **Day Timeline lives *inside* the Events tab** as a third view mode (Overlap / Calendar / Browse all), not as a 5th sub-tab — this was a deliberate decision to keep the tab count stable.
 6. **Real event data only.** All event IDs in [src/data/mockPack.ts](src/data/mockPack.ts) reference real entries in `events.json` (515 sessions, scraped). When adding a new mock wishlist entry or AI match, look up a real event ID first — the cards pull title, time, location, speakers, and description from the JSON.
 7. **`base: "./"` in [vite.config.ts](vite.config.ts) is load-bearing** for GitHub Pages. Don't change it.
+8. **Day Timeline shows majority-pack picks only.** `TIMELINE_MIN_ATTENDANCE` in [src/features/pack/TimelineCanvas.tsx](src/features/pack/TimelineCanvas.tsx) (default `3` → ≥ 3/4 others going) is the threshold for what slots onto the calendar canvas. Lower-attendance wishlist entries still appear in the Event Overlap list and as Slot Picker candidates. The mock wishlist in [src/data/mockPack.ts](src/data/mockPack.ts) is tuned so every conference day has at least two majority picks — if you lower the threshold, re-check that the demo still feels populated; if you raise it, beef up the mock data first.
 
 ---
 
@@ -28,31 +29,38 @@ The project brief lives at [websummit_hackathon.md](websummit_hackathon.md) — 
 
 ```mermaid
 flowchart TD
-    Main[main.tsx] --> App[App.tsx]
-    App --> Provider[PackProvider]
-    Provider --> Router{state.joined?}
-    Router -->|no| Join[JoinScreen]
-    Router -->|yes| Pack[PackScreen]
-    Pack --> Header[PackHeader]
-    Pack --> Tabs[TabBar]
-    Pack --> Body{active tab}
-    Pack --> Nav[BottomNav]
-    Body --> Events[EventsTab]
-    Body --> Status[StatusTab]
-    Body --> Map[MapTab]
-    Body --> AI[AIMatchTab]
-    Events --> Card[EventCard]
-    AI --> Card
-    Events --> QSB[QuickStatusBar]
-    Status --> QSB
-    Card --> Hook[usePackState]
-    QSB --> Hook
-    Status --> Hook
-    Map --> FloorPlan[FloorPlan SVG]
-    Map --> Hook
-    Hook --> Storage[(localStorage<br/>wsv-pack-state-v1)]
-    Hook --> MockData[mockPack.ts]
-    Card --> EventsData[events.json]
+ Main[main.tsx] --> App[App.tsx]
+ App --> Provider[PackProvider]
+ Provider --> Router{state.joined?}
+ Router -->|no| Join[JoinScreen]
+ Router -->|yes| Pack[PackScreen]
+ Pack --> Header[PackHeader]
+ Pack --> Tabs[TabBar]
+ Pack --> Body{active tab}
+ Pack --> Nav[BottomNav]
+ Body --> Events[EventsTab]
+ Body --> Status[StatusTab]
+ Body --> Map[MapTab]
+ Body --> AI[AIMatchTab]
+ Events --> ViewMode{view mode}
+ ViewMode -->|overlap| Card[EventCard]
+ ViewMode -->|calendar| Calendar[CalendarView]
+ ViewMode -->|all| Card
+ Calendar --> Timeline[TimelineCanvas]
+ Calendar --> Candidates[CandidateSheet]
+ Candidates --> Card
+ AI --> Card
+ Status --> QSB[QuickStatusBar]
+ Card --> Hook[usePackState]
+ QSB --> Hook
+ Status --> Hook
+ Timeline --> Hook
+ Map --> FloorPlan[FloorPlan SVG]
+ Map --> Hook
+ Hook --> Storage[(localStorage<br/>wsv-pack-state-v1)]
+ Hook --> MockData[mockPack.ts]
+ Card --> EventsData[events.json]
+ Timeline --> EventsData
 ```
 
 **Data flow:** mock seed data (`mockPack.ts`) → `useReducer` in `PackProvider` → context → components. Mutations go back through `usePackState()` actions (`join`, `leave`, `broadcast`, `toggleWishlist`, `moveUser`, `refreshAiMatches`). The reducer auto-syncs to `localStorage` after every change.
@@ -74,6 +82,8 @@ flowchart TD
 | Adjust the venue floor plan illustration              | SVG paths in [src/features/pack/FloorPlan.tsx](src/features/pack/FloorPlan.tsx)                                                      |
 | Edit the brand palette                                | `theme.extend.colors` in [tailwind.config.js](tailwind.config.js)                                                                      |
 | Adjust mobile frame dimensions or notch               | [src/layout/MobileFrame.tsx](src/layout/MobileFrame.tsx)                                                                               |
+| Change Day Timeline range, snap, attendance threshold | `DAY_START_MIN`, `DAY_END_MIN`, `PX_PER_MIN`, `TIMELINE_MIN_ATTENDANCE` in [src/features/pack/TimelineCanvas.tsx](src/features/pack/TimelineCanvas.tsx) |
+| Tune Slot Picker ranking                              | Scoring block in [src/features/pack/CandidateSheet.tsx](src/features/pack/CandidateSheet.tsx); `keywordScore` lives in [src/utils/calendar.ts](src/utils/calendar.ts) |
 
 ---
 
@@ -83,7 +93,8 @@ flowchart TD
 - **The user is "You", not a fifth profile.** "You" appears in feeds and on the map, but the avatar row in `PackHeader` only shows the 4 friends. Overlap counts in `EventCard` are denominated `N / 4` (other members), with a separate filled-bookmark icon to indicate whether `you` are also going. Don't conflate these two signals.
 - **Event IDs.** All wishlist and AI-match entries reference real IDs in `events.json`. If you invent an ID, the card will render nothing because `getEvent(id)` returns `undefined`.
 - **Day labels.** `dayLabel()` in [src/utils/time.ts](src/utils/time.ts) returns 3-letter codes ("MON", "TUE", "WED", "THU") computed from the event's `date` field. The conference spans 2026-05-11 → 2026-05-14. There is **no "FRI"** in the real data despite the mockup using it for one card — that was illustrative.
-- **Times are local Vancouver time.** Event ISO strings encode the local time with a `-07:00` offset; `formatClock()` parses the `HH:MM` portion directly to avoid UTC drift. Don't replace it with `new Date().toLocaleTimeString()` — that will print the user's local time instead of Vancouver time.
+- **Times are local Vancouver time.** Event ISO strings encode the local time with a `-07:00` offset; `formatClock()` parses the `HH:MM` portion directly to avoid UTC drift. Don't replace it with `new Date().toLocaleTimeString()` — that will print the user's local time instead of Vancouver time. The Day Timeline reuses the same trick via `isoToMinutes()` in [src/utils/calendar.ts](src/utils/calendar.ts).
+- **Wishlist tuning rule.** Each conference day (MON / TUE / WED / THU) should keep **at least two** entries with `goingCount >= TIMELINE_MIN_ATTENDANCE` (default `3` other members going). That's what makes the Day Timeline look populated when you switch days. If you remove or downgrade a wishlist entry, scan the four days and rebalance — otherwise the calendar will look empty on whichever day you happen to be testing.
 
 ---
 
@@ -165,6 +176,12 @@ The original development environment is Windows + PowerShell. A few things to kn
 2. Create a `NewTab.tsx` component in `src/features/pack/`.
 3. Wire it into the `tab === "..."` switch in [src/screens/PackScreen.tsx](src/screens/PackScreen.tsx).
 
+### Add a new view mode to the Events tab (like Day Timeline)
+1. Extend the `view` union in [src/features/pack/EventsTab.tsx](src/features/pack/EventsTab.tsx) (currently `"overlap" | "calendar" | "all"`).
+2. Add an entry tile inside the `view === "overlap"` branch — copy the `Open day timeline` button pattern (rounded card, lucide icon in a brand-tinted square, right-arrow on the right).
+3. Add a `view === "yourMode"` branch with a `← Back to overlap` button (same pattern as the calendar branch at the top of the file).
+4. Keep the new view mounted *inside* the Events tab — do **not** add it as a 5th sub-tab (see hard-constraint §3.5).
+
 ### Wire the AI Match button to a real Claude API
 1. Add `VITE_ANTHROPIC_API_KEY` (or proxy through a Vercel Edge Function — Anthropic shouldn't be called from the browser directly).
 2. Replace `currentAiMatches` derivation in [src/hooks/usePackState.ts](src/hooks/usePackState.ts) with an async fetch keyed off `state.wishlist` and the member tags.
@@ -199,6 +216,7 @@ src/
   utils/
     events.ts Typed event helpers + format colour map
     time.ts Day labels, clock, relative time
+    calendar.ts Minute math + 10-min snap + Jaccard keyword similarity
   layout/
     MobileFrame.tsx Desktop phone frame
     BottomNav.tsx 5-tab nav (only Pack enabled)
@@ -208,7 +226,10 @@ src/
   features/pack/
     PackHeader.tsx Title, Leave, join code card, packmates row
     TabBar.tsx Events | Status | Map | AI Match
-    EventsTab.tsx Overlap list + browse-all mode
+    EventsTab.tsx Overlap list + Day Timeline entry + browse-all mode
+    CalendarView.tsx Day Timeline screen (chips + canvas + slot picker)
+    TimelineCanvas.tsx Scrollable 8AM–10PM grid; wishlist blocks; tap+drag selection
+    CandidateSheet.tsx Slot Picker — ranked events that fit the selected window
     StatusTab.tsx Live status + activity feed
     MapTab.tsx Floor plan + pins + tap/zone update
     AIMatchTab.tsx Top-3 picks with reasoning
