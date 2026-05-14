@@ -1,5 +1,5 @@
-export const GROUP_CODE = "WSV7XK";
-export const GROUP_NAME = "My Group";
+export const PACK_CODE = "WSV7XK";
+export const PACK_NAME = "My Pack";
 export const CONFERENCE_LABEL = "Web Summit Vancouver";
 export const CONFERENCE_DATE_RANGE = "May 11–14";
 export const MEMBER_LIMIT = 6;
@@ -231,21 +231,21 @@ export const AI_MATCH_SETS: AIMatch[][] = [
       going: 4,
       total: 4,
       reason:
-        "All 4 members showed strong interest in AI & developer tools. Open-source agents is a thread the entire group is following.",
+        "All 4 members showed strong interest in AI & developer tools. Open-source agents is a thread the entire pack is following.",
     },
     {
       eventId: "1b0459b1-c02e-4b38-83a0-3e21d11d4e83",
       going: 3,
       total: 4,
       reason:
-        "3 members are tracking the creator economy. Jessica's media background and the group's marketing interest make this a strong fit.",
+        "3 members are tracking the creator economy. Jessica's media background and the pack's marketing interest make this a strong fit.",
     },
     {
       eventId: "2784c1e1-51e8-4e50-a518-28961ed5239b",
       going: 3,
       total: 4,
       reason:
-        "Highly relevant for the founders and operators in your group. Daniel's Series A focus and the meetup format mean lots of in-person value.",
+        "Highly relevant for the founders and operators in your pack. Daniel's Series A focus and the meetup format mean lots of in-person value.",
     },
   ],
   [

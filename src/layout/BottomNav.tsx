@@ -10,7 +10,7 @@ type NavItem = {
 const ITEMS: NavItem[] = [
   { id: "home", label: "Home", Icon: Home, enabled: false },
   { id: "schedule", label: "Schedule", Icon: Calendar, enabled: false },
-  { id: "group", label: "Group", Icon: Users, enabled: true },
+  { id: "pack", label: "Pack", Icon: Users, enabled: true },
   { id: "scan", label: "Scan", Icon: ScanLine, enabled: false },
   { id: "profile", label: "Profile", Icon: User, enabled: false },
 ];
@@ -20,7 +20,7 @@ export function BottomNav() {
     <nav className="shrink-0 border-t border-line bg-app/95 backdrop-blur safe-bottom">
       <ul className="grid grid-cols-5 h-16">
         {ITEMS.map((item) => {
-          const active = item.id === "group";
+          const active = item.id === "pack";
           return (
             <li key={item.id} className="flex items-center justify-center">
               <button

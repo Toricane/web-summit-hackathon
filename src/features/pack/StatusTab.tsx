@@ -1,8 +1,8 @@
 import { Zap, ChevronRight, Coffee, Footprints, Mic, Pizza, MapPin } from "lucide-react";
-import { useGroupState, memberById } from "../../hooks/useGroupState";
+import { usePackState, memberById } from "../../hooks/usePackState";
 import { QuickStatusBar } from "./QuickStatusBar";
 import { relativeTime } from "../../utils/time";
-import type { StatusPresetId } from "../../data/mockGroup";
+import type { StatusPresetId } from "../../data/mockPack";
 
 const ICON_MAP: Record<StatusPresetId, typeof Pizza> = {
   food: Pizza,
@@ -21,7 +21,7 @@ const TINT_MAP: Record<StatusPresetId, { bg: string; ring: string; text: string 
 };
 
 export function StatusTab() {
-  const { state, members, presetById, broadcast } = useGroupState();
+  const { state, members, presetById, broadcast } = usePackState();
   const you = state.statusFeed.find((s) => s.memberId === "you");
   const others = state.statusFeed.filter((s) => s.memberId !== "you");
   const youMember = members.find((m) => m.id === "you")!;
@@ -40,7 +40,7 @@ export function StatusTab() {
           <div>
             <h2 className="text-lg font-semibold">Live Status</h2>
             <p className="text-[12px] text-ink-muted">
-              See what your group is up to right now
+              See what your pack is up to right now
             </p>
           </div>
           <button
@@ -83,7 +83,7 @@ export function StatusTab() {
         )}
 
         <div className="mt-5 flex items-center justify-between">
-          <h3 className="text-sm font-semibold">Group Activity</h3>
+          <h3 className="text-sm font-semibold">Pack Activity</h3>
           <button className="text-[11px] text-brand-light flex items-center gap-0.5 tap">
             History
             <ChevronRight className="w-3 h-3" />
@@ -140,7 +140,7 @@ export function StatusTab() {
           />
           <span>
             Signed in as <span className="text-ink">You</span> · status visible
-            only to your group
+            only to your pack
           </span>
         </div>
       </div>
@@ -148,7 +148,7 @@ export function StatusTab() {
       <div className="mt-4 border-t border-line">
         <QuickStatusBar
           title="Quick Status"
-          subtitle="Tap to broadcast to the group"
+          subtitle="Tap to broadcast to the pack"
         />
       </div>
     </div>

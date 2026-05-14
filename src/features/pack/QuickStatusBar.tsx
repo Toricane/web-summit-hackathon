@@ -1,6 +1,6 @@
 import { Coffee, Footprints, Mic, Pizza, MapPin } from "lucide-react";
-import { useGroupState } from "../../hooks/useGroupState";
-import { STATUS_PRESETS, type StatusPresetId } from "../../data/mockGroup";
+import { usePackState } from "../../hooks/usePackState";
+import { STATUS_PRESETS, type StatusPresetId } from "../../data/mockPack";
 
 const ICONS: Record<
   StatusPresetId,
@@ -40,14 +40,14 @@ const ICONS: Record<
 
 export function QuickStatusBar({
   title = "Quick Status",
-  subtitle = "Broadcast your status to the group",
+  subtitle = "Broadcast your status to the pack",
   variant = "default",
 }: {
   title?: string;
   subtitle?: string;
   variant?: "default" | "compact";
 }) {
-  const { broadcast, state, presetById } = useGroupState();
+  const { broadcast, state, presetById } = usePackState();
   const current = state.statusFeed.find((s) => s.memberId === "you");
 
   return (

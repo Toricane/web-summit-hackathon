@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Sparkles, RefreshCw, ArrowRight, Info } from "lucide-react";
-import { useGroupState } from "../../hooks/useGroupState";
+import { usePackState } from "../../hooks/usePackState";
 import { EventCard } from "./EventCard";
-import { OTHER_MEMBER_IDS } from "../../data/mockGroup";
+import { OTHER_MEMBER_IDS } from "../../data/mockPack";
 import type { TabId } from "./TabBar";
 
 type AIMatchTabProps = {
@@ -10,7 +10,7 @@ type AIMatchTabProps = {
 };
 
 export function AIMatchTab({ onSwitchTab }: AIMatchTabProps) {
-  const { currentAiMatches, refreshAiMatches } = useGroupState();
+  const { currentAiMatches, refreshAiMatches } = usePackState();
   const [refreshedAt, setRefreshedAt] = useState("just now");
   const [refreshing, setRefreshing] = useState(false);
 
@@ -28,11 +28,11 @@ export function AIMatchTab({ onSwitchTab }: AIMatchTabProps) {
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="text-lg font-semibold">AI Group Match</h2>
+            <h2 className="text-lg font-semibold">AI Pack Match</h2>
             <span className="pill bg-brand/20 text-brand-light">BETA</span>
           </div>
           <p className="text-[12px] text-ink-muted">
-            AI-powered recommendations tailored to your group's interests and
+            AI-powered recommendations tailored to your pack's interests and
             backgrounds.
           </p>
         </div>
@@ -63,8 +63,8 @@ export function AIMatchTab({ onSwitchTab }: AIMatchTabProps) {
         </span>
         <div className="flex-1 text-[12px] text-ink-muted leading-relaxed">
           <span className="text-ink font-semibold">How it works.</span>{" "}
-          We analyse every event your group has shown interest in, along with
-          your profiles, to find the talks with the highest group appeal.
+          We analyse every event your pack has shown interest in, along with
+          your profiles, to find the talks with the highest pack appeal.
         </div>
         <button className="text-[11px] text-brand-light tap shrink-0">
           Learn more
@@ -72,7 +72,7 @@ export function AIMatchTab({ onSwitchTab }: AIMatchTabProps) {
       </div>
 
       <div>
-        <h3 className="text-sm font-semibold">Top 3 picks for your group</h3>
+        <h3 className="text-sm font-semibold">Top 3 picks for your pack</h3>
         <p className="text-[11px] text-ink-muted">
           Based on interests, industries and schedule overlap
         </p>
@@ -85,7 +85,7 @@ export function AIMatchTab({ onSwitchTab }: AIMatchTabProps) {
               rankBadge={idx + 1}
               goers={OTHER_MEMBER_IDS.slice(0, match.going)}
               totalOthers={match.total}
-              matchLabel="Group match"
+              matchLabel="Pack match"
               reason={match.reason}
             />
           ))}
@@ -102,7 +102,7 @@ export function AIMatchTab({ onSwitchTab }: AIMatchTabProps) {
           </div>
           <div className="text-[11px] text-ink-muted">
             Keep adding events to your wishlist so we can learn what matters to
-            your group.
+            your pack.
           </div>
         </div>
         <button

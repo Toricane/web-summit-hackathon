@@ -1,7 +1,7 @@
 /**
  * Stylised top-down floor plan of the Vancouver Convention Centre West
  * (illustrative — not to scale). Uses a 100x100 viewBox so member pin
- * coordinates in mockGroup.ts can be expressed as percentages.
+ * coordinates in mockPack.ts can be expressed as percentages.
  */
 export function FloorPlan({
   onTapZone,

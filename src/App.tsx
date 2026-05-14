@@ -1,19 +1,19 @@
-import { GroupProvider, useGroupState } from "./hooks/useGroupState";
+import { PackProvider, usePackState } from "./hooks/usePackState";
 import { MobileFrame } from "./layout/MobileFrame";
 import { JoinScreen } from "./screens/JoinScreen";
-import { GroupScreen } from "./screens/GroupScreen";
+import { PackScreen } from "./screens/PackScreen";
 
 function Router() {
-  const { state } = useGroupState();
+  const { state } = usePackState();
   return (
-    <MobileFrame>{state.joined ? <GroupScreen /> : <JoinScreen />}</MobileFrame>
+    <MobileFrame>{state.joined ? <PackScreen /> : <JoinScreen />}</MobileFrame>
   );
 }
 
 export default function App() {
   return (
-    <GroupProvider>
+    <PackProvider>
       <Router />
-    </GroupProvider>
+    </PackProvider>
   );
 }

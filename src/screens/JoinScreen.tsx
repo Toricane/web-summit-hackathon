@@ -1,17 +1,17 @@
 import { useState } from "react";
 import { Sparkles, Users, ArrowRight, Lock } from "lucide-react";
-import { useGroupState } from "../hooks/useGroupState";
+import { usePackState } from "../hooks/usePackState";
 import {
   CONFERENCE_DATE_RANGE,
   CONFERENCE_LABEL,
-  GROUP_CODE,
-} from "../data/mockGroup";
+  PACK_CODE,
+} from "../data/mockPack";
 
 export function JoinScreen() {
-  const { join } = useGroupState();
-  const [code, setCode] = useState(GROUP_CODE);
+  const { join } = usePackState();
+  const [code, setCode] = useState(PACK_CODE);
   const [touched, setTouched] = useState(false);
-  const valid = code.trim().toUpperCase() === GROUP_CODE;
+  const valid = code.trim().toUpperCase() === PACK_CODE;
   const invalid = touched && !valid;
 
   return (
@@ -28,15 +28,15 @@ export function JoinScreen() {
       <div className="relative flex-1 flex flex-col p-6 pt-14">
         <div className="flex items-center gap-2 text-ink-muted text-xs uppercase tracking-[0.25em]">
           <Sparkles className="w-3.5 h-3.5 text-brand-light" />
-          <span>Group Coordinator</span>
+          <span>Pack Coordinator</span>
         </div>
         <h1 className="mt-4 text-3xl font-semibold leading-tight">
           Navigate <span className="text-brand-light">Web&nbsp;Summit</span>
           <br />
-          with your group.
+          with your pack.
         </h1>
         <p className="mt-3 text-ink-muted text-sm leading-relaxed">
-          Share an event wishlist, see where your group is on the venue map,
+          Share an event wishlist, see where your pack is on the venue map,
           and broadcast quick statuses — without leaving the floor.
         </p>
 
@@ -79,11 +79,11 @@ export function JoinScreen() {
                     type="button"
                     className="underline underline-offset-2"
                     onClick={() => {
-                      setCode(GROUP_CODE);
+                      setCode(PACK_CODE);
                       setTouched(false);
                     }}
                   >
-                    {GROUP_CODE}
+                    {PACK_CODE}
                   </button>
                 </span>
               ) : (
@@ -102,7 +102,7 @@ export function JoinScreen() {
                        disabled:bg-brand/40 disabled:cursor-not-allowed"
           >
             <Users className="w-5 h-5" />
-            Join Group
+            Join Pack
             <ArrowRight className="w-5 h-5" />
           </button>
 
@@ -113,11 +113,11 @@ export function JoinScreen() {
                        text-ink-subtle bg-card-muted cursor-not-allowed"
             title="Disabled in the demo"
           >
-            Create New Group
+            Create New Pack
           </button>
 
           <p className="mt-4 text-center text-[11px] text-ink-subtle">
-            By joining you'll see four pre-loaded teammates' wishlists,
+            By joining you'll see four pre-loaded packmates' wishlists,
             statuses, and pins.
           </p>
         </div>

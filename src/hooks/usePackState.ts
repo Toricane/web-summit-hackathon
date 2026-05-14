@@ -20,11 +20,11 @@ import {
   type MemberId,
   type StatusEntry,
   type StatusPresetId,
-} from "../data/mockGroup";
+} from "../data/mockPack";
 
-const STORAGE_KEY = "wsv-group-state-v1";
+const STORAGE_KEY = "wsv-pack-state-v1";
 
-export type GroupState = {
+export type PackState = {
   joined: boolean;
   wishlist: Record<string, MemberId[]>;
   statusFeed: StatusEntry[];
@@ -32,7 +32,7 @@ export type GroupState = {
   aiMatchSetIndex: number;
 };
 
-function seed(): GroupState {
+function seed(): PackState {
   const wishlist: Record<string, MemberId[]> = {};
   for (const row of WISHLIST) wishlist[row.eventId] = [...row.goers];
   return {
@@ -51,9 +51,9 @@ type Action =
   | { type: "TOGGLE_WISHLIST"; eventId: string }
   | { type: "MOVE_USER"; x: number; y: number }
   | { type: "REFRESH_AI" }
-  | { type: "HYDRATE"; payload: GroupState };
+  | { type: "HYDRATE"; payload: PackState };
 
-function reducer(state: GroupState, action: Action): GroupState {
+function reducer(state: PackState, action: Action): PackState {
   switch (action.type) {
     case "JOIN":
       return { ...state, joined: true };
@@ -106,8 +106,8 @@ function reducer(state: GroupState, action: Action): GroupState {
   }
 }
 
-type GroupContextValue = {
-  state: GroupState;
+type PackContextValue = {
+  state: PackState;
   members: typeof MEMBERS;
   otherMemberIds: MemberId[];
   join: () => void;
@@ -122,9 +122,9 @@ type GroupContextValue = {
   presetById: (id: StatusPresetId) => (typeof STATUS_PRESETS)[number];
 };
 
-const GroupContext = createContext<GroupContextValue | null>(null);
+const PackContext = createContext<PackContextValue | null>(null);
 
-export function GroupProvider({ children }: { children: ReactNode }) {
+export function PackProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, null, seed);
   const hydratedRef = useRef(false);
 
@@ -132,7 +132,7 @@ export function GroupProvider({ children }: { children: ReactNode }) {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
-        const parsed = JSON.parse(raw) as GroupState;
+        const parsed = JSON.parse(raw) as PackState;
         dispatch({ type: "HYDRATE", payload: parsed });
       }
     } catch {
@@ -151,7 +151,7 @@ export function GroupProvider({ children }: { children: ReactNode }) {
     }
   }, [state]);
 
-  const value = useMemo<GroupContextValue>(() => {
+  const value = useMemo<PackContextValue>(() => {
     const presetMap = new Map(STATUS_PRESETS.map((p) => [p.id, p]));
     const goersFor = (eventId: string) => state.wishlist[eventId] ?? [];
     return {
@@ -172,13 +172,13 @@ export function GroupProvider({ children }: { children: ReactNode }) {
     };
   }, [state]);
 
-  return createElement(GroupContext.Provider, { value }, children);
+  return createElement(PackContext.Provider, { value }, children);
 }
 
-export function useGroupState(): GroupContextValue {
-  const ctx = useContext(GroupContext);
+export function usePackState(): PackContextValue {
+  const ctx = useContext(PackContext);
   if (!ctx)
-    throw new Error("useGroupState must be used inside <GroupProvider>");
+    throw new Error("usePackState must be used inside <PackProvider>");
   return ctx;
 }
 

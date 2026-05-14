@@ -3,7 +3,7 @@ import { ChevronDown, SlidersHorizontal, ArrowLeft, Search } from "lucide-react"
 import { EventCard } from "./EventCard";
 import { FilterSheet } from "./FilterSheet";
 import { QuickStatusBar } from "./QuickStatusBar";
-import { useGroupState } from "../../hooks/useGroupState";
+import { usePackState } from "../../hooks/usePackState";
 import {
   ALL_EVENTS,
   CONFERENCE_DATES,
@@ -18,7 +18,7 @@ type EventsTabProps = {
 
 export function EventsTab({ onSwitchTab: _onSwitchTab }: EventsTabProps) {
   void _onSwitchTab;
-  const { state } = useGroupState();
+  const { state } = usePackState();
   const [activeDate, setActiveDate] = useState<string | "all">("all");
   const [dayMenuOpen, setDayMenuOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
@@ -93,7 +93,7 @@ export function EventsTab({ onSwitchTab: _onSwitchTab }: EventsTabProps) {
               <div>
                 <h2 className="text-lg font-semibold">Event Overlap</h2>
                 <p className="text-[12px] text-ink-muted">
-                  Events your group wants to attend
+                  Events your pack wants to attend
                 </p>
               </div>
               <div className="flex items-center gap-2">

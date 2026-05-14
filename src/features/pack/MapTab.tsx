@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { ChevronDown, MapPin, List, Crosshair, X } from "lucide-react";
-import { useGroupState } from "../../hooks/useGroupState";
-import { MAP_ZONES, type MemberId } from "../../data/mockGroup";
+import { usePackState } from "../../hooks/usePackState";
+import { MAP_ZONES, type MemberId } from "../../data/mockPack";
 import { FloorPlan } from "./FloorPlan";
 
 export function MapTab() {
-  const { state, members, presetById, moveUser } = useGroupState();
+  const { state, members, presetById, moveUser } = usePackState();
   const [legendOpen, setLegendOpen] = useState(false);
   const [zoneOpen, setZoneOpen] = useState(false);
   const [tapMode, setTapMode] = useState(false);
@@ -23,9 +23,9 @@ export function MapTab() {
       <div className="px-4 pt-3 pb-2">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h2 className="text-lg font-semibold">Live Group Map</h2>
+            <h2 className="text-lg font-semibold">Live Pack Map</h2>
             <p className="text-[12px] text-ink-muted">
-              See where your group is in the venue
+              See where your pack is in the venue
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -115,7 +115,7 @@ export function MapTab() {
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="w-3 h-3 rounded-full ring-2 ring-emerald-400 bg-card" />
-                    <span>Group member</span>
+                    <span>Pack member</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-emerald-400" />
@@ -136,7 +136,7 @@ export function MapTab() {
           <div className="p-3 border-t border-line flex items-center justify-between">
             <div className="flex items-center gap-2 text-[11px] text-ink-muted">
               <span className="w-2 h-2 rounded-full bg-emerald-400" />
-              {livingMembers.length} members live · Last updated just now
+              {livingMembers.length} packmates live · Last updated just now
             </div>
             <div className="flex items-center gap-2">
               <button

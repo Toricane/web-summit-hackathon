@@ -7,8 +7,8 @@ import {
   type WebSummitEvent,
 } from "../../utils/events";
 import { dayLabel, formatClock } from "../../utils/time";
-import { useGroupState, memberById } from "../../hooks/useGroupState";
-import type { MemberId } from "../../data/mockGroup";
+import { usePackState, memberById } from "../../hooks/usePackState";
+import type { MemberId } from "../../data/mockPack";
 
 type EventCardProps = {
   eventId: string;
@@ -30,7 +30,7 @@ export function EventCard({
   matchLabel = "Going",
 }: EventCardProps) {
   const event = getEvent(eventId);
-  const { toggleWishlist, isUserGoing, goersFor } = useGroupState();
+  const { toggleWishlist, isUserGoing, goersFor } = usePackState();
   const [expanded, setExpanded] = useState(false);
 
   if (!event) return null;
