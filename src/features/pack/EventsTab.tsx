@@ -1,7 +1,14 @@
 import { useMemo, useState } from "react";
-import { ChevronDown, SlidersHorizontal, ArrowLeft, Search } from "lucide-react";
+import {
+  ChevronDown,
+  SlidersHorizontal,
+  ArrowLeft,
+  Search,
+  CalendarRange,
+} from "lucide-react";
 import { EventCard } from "./EventCard";
 import { FilterSheet } from "./FilterSheet";
+import { CalendarView } from "./CalendarView";
 import { usePackState } from "../../hooks/usePackState";
 import {
   ALL_EVENTS,
@@ -24,7 +31,7 @@ export function EventsTab({ onSwitchTab: _onSwitchTab }: EventsTabProps) {
   const [selectedFormats, setSelectedFormats] = useState<Set<string>>(
     new Set(),
   );
-  const [view, setView] = useState<"overlap" | "all">("overlap");
+  const [view, setView] = useState<"overlap" | "calendar" | "all">("overlap");
   const [search, setSearch] = useState("");
 
   const allFormats = useMemo(
@@ -159,8 +166,22 @@ export function EventsTab({ onSwitchTab: _onSwitchTab }: EventsTabProps) {
 
             <button
               type="button"
-              onClick={() => setView("all")}
+              onClick={() => setView("calendar")}
               className="mt-4 w-full card p-4 flex items-center justify-between text-sm font-medium tap"
+            >
+              <span className="flex items-center gap-2">
+                <span className="w-7 h-7 rounded-lg bg-brand/20 grid place-items-center">
+                  <CalendarRange className="w-4 h-4 text-brand-light" />
+                </span>
+                Open day timeline
+              </span>
+              <span className="text-ink-muted">→</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setView("all")}
+              className="mt-3 w-full card p-4 flex items-center justify-between text-sm font-medium tap"
             >
               <span className="flex items-center gap-2">
                 <span className="w-7 h-7 rounded-lg bg-card-elevated grid place-items-center">
@@ -170,6 +191,18 @@ export function EventsTab({ onSwitchTab: _onSwitchTab }: EventsTabProps) {
               </span>
               <span className="text-ink-muted">{ALL_EVENTS.length} →</span>
             </button>
+          </>
+        ) : view === "calendar" ? (
+          <>
+            <button
+              type="button"
+              onClick={() => setView("overlap")}
+              className="flex items-center gap-1 text-xs text-ink-muted tap"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              Back to overlap
+            </button>
+            <CalendarView />
           </>
         ) : (
           <>
