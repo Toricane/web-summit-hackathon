@@ -35,6 +35,12 @@ export function StatusTab() {
 
   return (
     <div className="flex flex-col">
+      <div className="border-b border-line">
+        <QuickStatusBar
+          title="Quick Status"
+          subtitle="Tap to broadcast to the pack"
+        />
+      </div>
       <div className="px-4 pt-3 pb-2">
         <div className="flex items-end justify-between">
           <div>
@@ -143,13 +149,6 @@ export function StatusTab() {
             only to your pack
           </span>
         </div>
-      </div>
-
-      <div className="mt-4 border-t border-line">
-        <QuickStatusBar
-          title="Quick Status"
-          subtitle="Tap to broadcast to the pack"
-        />
       </div>
     </div>
   );

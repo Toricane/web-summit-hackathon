@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import { ChevronDown, SlidersHorizontal, ArrowLeft, Search } from "lucide-react";
 import { EventCard } from "./EventCard";
 import { FilterSheet } from "./FilterSheet";
-import { QuickStatusBar } from "./QuickStatusBar";
 import { usePackState } from "../../hooks/usePackState";
 import {
   ALL_EVENTS,
@@ -253,10 +252,6 @@ export function EventsTab({ onSwitchTab: _onSwitchTab }: EventsTabProps) {
             </div>
           </>
         )}
-      </div>
-
-      <div className="mt-2">
-        <QuickStatusBar />
       </div>
 
       <FilterSheet
