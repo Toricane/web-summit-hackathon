@@ -18,7 +18,6 @@ export type Member = {
 export type StatusPresetId =
   | "food"
   | "mainstage"
-  | "hallb"
   | "findme"
   | "coffee";
 
@@ -176,12 +175,6 @@ export const STATUS_PRESETS: StatusPreset[] = [
     emoji: "🎤",
   },
   {
-    id: "hallb",
-    label: "Heading to Hall B",
-    shortLabel: "Heading to\nHall B",
-    emoji: "🚶",
-  },
-  {
     id: "findme",
     label: "Come find me",
     shortLabel: "Come\nfind me",
@@ -198,7 +191,7 @@ export const STATUS_PRESETS: StatusPreset[] = [
 export const INITIAL_STATUS_FEED: StatusEntry[] = [
   { memberId: "you", preset: "food", minutesAgo: 0 },
   { memberId: "daniel", preset: "mainstage", minutesAgo: 2 },
-  { memberId: "jessica", preset: "hallb", minutesAgo: 5 },
+  { memberId: "jessica", preset: "findme", minutesAgo: 5 },
   { memberId: "ramesh", preset: "findme", minutesAgo: 12 },
   { memberId: "zohaib", preset: "coffee", minutesAgo: 18 },
 ];

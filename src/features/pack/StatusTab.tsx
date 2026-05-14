@@ -1,4 +1,4 @@
-import { Zap, ChevronRight, Coffee, Footprints, Mic, Pizza, MapPin } from "lucide-react";
+import { Zap, ChevronRight, Coffee, Mic, Pizza, MapPin } from "lucide-react";
 import { usePackState, memberById } from "../../hooks/usePackState";
 import { QuickStatusBar } from "./QuickStatusBar";
 import { relativeTime } from "../../utils/time";
@@ -7,7 +7,6 @@ import type { StatusPresetId } from "../../data/mockPack";
 const ICON_MAP: Record<StatusPresetId, typeof Pizza> = {
   food: Pizza,
   mainstage: Mic,
-  hallb: Footprints,
   findme: MapPin,
   coffee: Coffee,
 };
@@ -15,7 +14,6 @@ const ICON_MAP: Record<StatusPresetId, typeof Pizza> = {
 const TINT_MAP: Record<StatusPresetId, { bg: string; ring: string; text: string }> = {
   food: { bg: "bg-orange-500/15", ring: "border-orange-400/40", text: "text-orange-300" },
   mainstage: { bg: "bg-brand/15", ring: "border-brand/40", text: "text-brand-light" },
-  hallb: { bg: "bg-emerald-500/15", ring: "border-emerald-400/40", text: "text-emerald-300" },
   findme: { bg: "bg-rose-500/15", ring: "border-rose-400/40", text: "text-rose-300" },
   coffee: { bg: "bg-amber-500/15", ring: "border-amber-400/40", text: "text-amber-300" },
 };
@@ -182,7 +180,6 @@ function cycleNext(preset: StatusPresetId): StatusPresetId {
   const order: StatusPresetId[] = [
     "food",
     "mainstage",
-    "hallb",
     "findme",
     "coffee",
   ];

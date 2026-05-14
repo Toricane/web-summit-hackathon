@@ -1,6 +1,8 @@
-import { Coffee, Footprints, Mic, Pizza, MapPin } from "lucide-react";
+import { Coffee, Mic, Pizza, MapPin, Siren } from "lucide-react";
+import { useState } from "react";
 import { usePackState } from "../../hooks/usePackState";
 import { STATUS_PRESETS, type StatusPresetId } from "../../data/mockPack";
+import { EmergencySheet } from "./EmergencySheet";
 
 const ICONS: Record<
   StatusPresetId,
@@ -17,12 +19,6 @@ const ICONS: Record<
     ringTint: "border-brand/40",
     iconTint: "text-brand-light",
     bg: "bg-brand/15",
-  },
-  hallb: {
-    Icon: Footprints,
-    ringTint: "border-emerald-400/40",
-    iconTint: "text-emerald-300",
-    bg: "bg-emerald-500/15",
   },
   findme: {
     Icon: MapPin,
@@ -49,6 +45,7 @@ export function QuickStatusBar({
 }) {
   const { broadcast, state, presetById } = usePackState();
   const current = state.statusFeed.find((s) => s.memberId === "you");
+  const [emergencyOpen, setEmergencyOpen] = useState(false);
 
   return (
     <div className="px-4 pt-2 pb-4">
@@ -96,7 +93,26 @@ export function QuickStatusBar({
             </button>
           );
         })}
+        <button
+          type="button"
+          onClick={() => setEmergencyOpen(true)}
+          aria-haspopup="dialog"
+          aria-expanded={emergencyOpen}
+          className="rounded-2xl border border-red-500/50 bg-red-500/10 tap p-2 flex flex-col items-center justify-start gap-1"
+        >
+          <span className="relative w-9 h-9 rounded-full grid place-items-center border bg-red-500/20 border-red-500/50">
+            <span className="absolute inset-0 rounded-full border border-red-500/40 animate-ping" />
+            <Siren className="w-4 h-4 text-red-300" />
+          </span>
+          <span className="text-[10px] leading-tight text-center text-red-200 font-semibold">
+            Emergency
+          </span>
+        </button>
       </div>
+      <EmergencySheet
+        open={emergencyOpen}
+        onClose={() => setEmergencyOpen(false)}
+      />
     </div>
   );
 }

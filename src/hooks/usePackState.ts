@@ -22,7 +22,14 @@ import {
   type StatusPresetId,
 } from "../data/mockPack";
 
-const STORAGE_KEY = "wsv-pack-state-v1";
+const STORAGE_KEY = "wsv-pack-state-v2";
+
+export type EmergencyTarget = "pack" | "organizers" | "911";
+
+export type EmergencyAlert = {
+  target: EmergencyTarget;
+  at: number;
+};
 
 export type PackState = {
   joined: boolean;
@@ -30,6 +37,7 @@ export type PackState = {
   statusFeed: StatusEntry[];
   mapPositions: Record<MemberId, { x: number; y: number }>;
   aiMatchSetIndex: number;
+  lastEmergency: EmergencyAlert | null;
 };
 
 function seed(): PackState {
@@ -41,6 +49,7 @@ function seed(): PackState {
     statusFeed: [...INITIAL_STATUS_FEED],
     mapPositions: { ...INITIAL_MAP_POSITIONS },
     aiMatchSetIndex: 0,
+    lastEmergency: null,
   };
 }
 
@@ -51,6 +60,8 @@ type Action =
   | { type: "TOGGLE_WISHLIST"; eventId: string }
   | { type: "MOVE_USER"; x: number; y: number }
   | { type: "REFRESH_AI" }
+  | { type: "NOTIFY_EMERGENCY"; target: EmergencyTarget }
+  | { type: "DISMISS_EMERGENCY" }
   | { type: "HYDRATE"; payload: PackState };
 
 function reducer(state: PackState, action: Action): PackState {
@@ -99,8 +110,15 @@ function reducer(state: PackState, action: Action): PackState {
         aiMatchSetIndex:
           (state.aiMatchSetIndex + 1) % AI_MATCH_SETS.length,
       };
+    case "NOTIFY_EMERGENCY":
+      return {
+        ...state,
+        lastEmergency: { target: action.target, at: Date.now() },
+      };
+    case "DISMISS_EMERGENCY":
+      return { ...state, lastEmergency: null };
     case "HYDRATE":
-      return action.payload;
+      return { ...action.payload, lastEmergency: null };
     default:
       return state;
   }
@@ -116,6 +134,8 @@ type PackContextValue = {
   toggleWishlist: (eventId: string) => void;
   moveUser: (x: number, y: number) => void;
   refreshAiMatches: () => void;
+  notifyEmergency: (target: EmergencyTarget) => void;
+  dismissEmergency: () => void;
   currentAiMatches: AIMatch[];
   goersFor: (eventId: string) => MemberId[];
   isUserGoing: (eventId: string) => boolean;
@@ -145,7 +165,9 @@ export function PackProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!hydratedRef.current) return;
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      const { lastEmergency: _omit, ...persisted } = state;
+      void _omit;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(persisted));
     } catch {
       // ignore quota errors
     }
@@ -165,6 +187,9 @@ export function PackProvider({ children }: { children: ReactNode }) {
         dispatch({ type: "TOGGLE_WISHLIST", eventId }),
       moveUser: (x, y) => dispatch({ type: "MOVE_USER", x, y }),
       refreshAiMatches: () => dispatch({ type: "REFRESH_AI" }),
+      notifyEmergency: (target) =>
+        dispatch({ type: "NOTIFY_EMERGENCY", target }),
+      dismissEmergency: () => dispatch({ type: "DISMISS_EMERGENCY" }),
       currentAiMatches: AI_MATCH_SETS[state.aiMatchSetIndex],
       goersFor,
       isUserGoing: (eventId) => goersFor(eventId).includes("you"),
